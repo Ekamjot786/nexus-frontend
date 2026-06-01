@@ -9,9 +9,10 @@ export function useWebSocket(token) {
     if (!token) return;
 
     const wsBase = import.meta.env.VITE_WS_URL || '';
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const url = wsBase
       ? `${wsBase}/ws/?token=${token}`
-      : `ws://${window.location.host}/ws/?token=${token}`;
+      : `${protocol}//${window.location.host}/ws/?token=${token}`;
 
     const ws = new WebSocket(url);
     wsRef.current = ws;
