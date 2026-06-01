@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import GroupCalendar from './GroupCalendar';
 
 function Avatar({ username, color, size = 32, isAI = false, isGroup = false }) {
   const bg = isAI ? '#7c3aed' : isGroup ? '#2d7d46' : (color || '#5865f2');
@@ -20,6 +21,8 @@ export default function ChatWindow({ conversationId, wsHook }) {
   const [input, setInput] = useState('');
   const [askAI, setAskAI] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -60,6 +63,16 @@ export default function ChatWindow({ conversationId, wsHook }) {
   };
 
   const onKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } };
+
+  const copyInvite = async () => {
+    try {
+      const { data } = await axios.post(`/api/conversations/${conversationId}/invite/`);
+      const link = `${window.location.origin}/invite/${data.invite_code}`;
+      await navigator.clipboard.writeText(link);
+      setInviteCopied(true);
+      setTimeout(() => setInviteCopied(false), 2000);
+    } catch {}
+  };
   const formatTime = (ts) => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const formatDate = (ts) => new Date(ts).toLocaleDateString();
   const memberColor = (id) => members.find(m => m.id === id)?.color;
@@ -70,11 +83,24 @@ export default function ChatWindow({ conversationId, wsHook }) {
     <div className="chat-area">
       <div className="chat-header">
         <Avatar username={convName} color={memberColor(members.find(m => m.id !== user.id)?.id)} isGroup={isGroup} size={36} />
-        <div>
+        <div style={{ flex: 1 }}>
           <h3>{convName}</h3>
           <div className="members">{members.map(m => m.username).join(', ')}</div>
         </div>
+        {isGroup && (
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => setShowCalendar(true)} title="Group Calendar"
+              style={{ background: '#2d2f34', border: 'none', borderRadius: 8, padding: '6px 10px', color: '#fff', cursor: 'pointer', fontSize: 16 }}>
+              📅
+            </button>
+            <button onClick={copyInvite} title="Copy invite link"
+              style={{ background: inviteCopied ? '#3ba55d' : '#2d2f34', border: 'none', borderRadius: 8, padding: '6px 10px', color: '#fff', cursor: 'pointer', fontSize: 13, whiteSpace: 'nowrap' }}>
+              {inviteCopied ? '✓ Copied!' : '🔗 Invite'}
+            </button>
+          </div>
+        )}
       </div>
+      {showCalendar && <GroupCalendar conversationId={conversationId} members={members} onClose={() => setShowCalendar(false)} />}
       <div className="chat-messages">
         {messages.map((msg) => {
           const isOwn = msg.sender_id === user.id;

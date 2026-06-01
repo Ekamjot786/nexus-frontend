@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
 import Admin from './pages/Admin';
+import Invite from './pages/Invite';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
           <Route path="/" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+          <Route path="/invite/:code" element={<Invite />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
