@@ -9,12 +9,13 @@ export default function Chat() {
   const { token, user } = useAuth();
   const [activeConv, setActiveConv] = useState(null);
   const [taskToast, setTaskToast] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const isMobile = window.innerWidth <= 768;
   const wsHook = useWebSocket(token);
 
   useEffect(() => {
     if (!wsHook?.on) return;
     const handler = (data) => {
-      // Don't notify the person who created the task
       if (data.task.created_by === user?.username) return;
       setTaskToast(data.task);
       setTimeout(() => setTaskToast(null), 4000);
@@ -26,6 +27,12 @@ export default function Chat() {
   const handleSelect = (id) => {
     setActiveConv(id);
     if (id !== 'ai') wsHook.emit('join_conversation', { conversationId: id });
+    if (isMobile) setShowSidebar(false);
+  };
+
+  const handleBack = () => {
+    setActiveConv(null);
+    setShowSidebar(true);
   };
 
   return (
@@ -48,16 +55,30 @@ export default function Chat() {
           )}
         </div>
       )}
-      <Sidebar activeId={activeConv} onSelect={handleSelect} wsHook={wsHook} />
-      {activeConv === null && (
-        <div className="empty-state" style={{ flex: 1 }}>
-          <div style={{ fontSize: 48 }}>💬</div>
-          <h3>Select a conversation</h3>
-          <p>Choose from the sidebar or start a new one</p>
-        </div>
+
+      <Sidebar
+        activeId={activeConv}
+        onSelect={handleSelect}
+        wsHook={wsHook}
+        className={isMobile && !showSidebar ? 'hidden' : ''}
+      />
+
+      {/* On mobile, only show chat when a conv is selected */}
+      {(!isMobile || !showSidebar) && (
+        <>
+          {activeConv === null && !isMobile && (
+            <div className="empty-state" style={{ flex: 1 }}>
+              <div style={{ fontSize: 48 }}>💬</div>
+              <h3>Select a conversation</h3>
+              <p>Choose from the sidebar or start a new one</p>
+            </div>
+          )}
+          {activeConv === 'ai' && <AIChat onBack={isMobile ? handleBack : null} />}
+          {activeConv && activeConv !== 'ai' && (
+            <ChatWindow conversationId={activeConv} wsHook={wsHook} onBack={isMobile ? handleBack : null} />
+          )}
+        </>
       )}
-      {activeConv === 'ai' && <AIChat />}
-      {activeConv && activeConv !== 'ai' && <ChatWindow conversationId={activeConv} wsHook={wsHook} />}
     </div>
   );
 }

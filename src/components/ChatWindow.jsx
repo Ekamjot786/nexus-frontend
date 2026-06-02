@@ -12,7 +12,7 @@ function Avatar({ username, color, size = 32, isAI = false, isGroup = false }) {
   );
 }
 
-export default function ChatWindow({ conversationId, wsHook }) {
+export default function ChatWindow({ conversationId, wsHook, onBack }) {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [members, setMembers] = useState([]);
@@ -82,6 +82,9 @@ export default function ChatWindow({ conversationId, wsHook }) {
   return (
     <div className="chat-area">
       <div className="chat-header">
+        {onBack && (
+          <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: 22, cursor: 'pointer', marginRight: 4, padding: '0 4px' }}>‹</button>
+        )}
         <Avatar username={convName} color={memberColor(members.find(m => m.id !== user.id)?.id)} isGroup={isGroup} size={36} />
         <div style={{ flex: 1 }}>
           <h3>{convName}</h3>

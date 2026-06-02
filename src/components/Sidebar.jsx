@@ -12,7 +12,7 @@ function Avatar({ username, color, size = 40, isAI = false, isGroup = false }) {
   );
 }
 
-export default function Sidebar({ activeId, onSelect, wsHook }) {
+export default function Sidebar({ activeId, onSelect, wsHook, className }) {
   const { user, logout } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -48,7 +48,7 @@ export default function Sidebar({ activeId, onSelect, wsHook }) {
   const handleCreated = (id) => { setShowModal(false); load(); onSelect(id); };
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar${className ? ' ' + className : ''}`}>
       <div className="sidebar-header">
         <h2>✦ Nexus</h2>
         <button className="btn btn-ghost" style={{ fontSize: 20, padding: '4px 8px' }} onClick={() => setShowModal(true)}>+</button>
