@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-export default function AIChat() {
+export default function AIChat({ onBack }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,12 +30,15 @@ export default function AIChat() {
   return (
     <div className="ai-page chat-area">
       <div className="chat-header">
+        {onBack && (
+          <button onClick={onBack} style={{ background: 'none', border: 'none', color: '#aaa', fontSize: 22, cursor: 'pointer', marginRight: 4, padding: '0 4px' }}>‹</button>
+        )}
         <div className="conv-avatar ai" style={{ width: 36, height: 36, fontSize: 16, borderRadius: 10 }}>✦</div>
-        <div>
+        <div style={{ flex: 1 }}>
           <h3>Kin AI</h3>
           <div className="members">Private conversation · knows all your chats</div>
         </div>
-        <button className="btn btn-ghost" style={{ marginLeft: 'auto', fontSize: 13 }} onClick={clear}>Clear history</button>
+        <button className="btn btn-ghost" style={{ fontSize: 13 }} onClick={clear}>Clear history</button>
       </div>
       <div className="chat-messages">
         {messages.length === 0 && !loading && (
