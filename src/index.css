@@ -158,9 +158,9 @@ input:focus, textarea:focus { border-color: #5865f2; }
 /* Avatar placeholder to keep alignment when avatar is hidden */
 .avatar-spacer { width: 32px; flex-shrink: 0; }
 
-/* Content wrapper */
+/* Content wrapper — flex: 0 0 max-content prevents any shrinking */
 .message-content {
-  width: max-content;
+  flex: 0 0 max-content;
   max-width: 65%;
 }
 
@@ -280,7 +280,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
 /* ── Mobile & Responsive ── */
 
 /* Make sure viewport scales correctly on mobile */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   body { overflow: hidden; }
 
   /* Auth pages — full width on mobile */
@@ -339,7 +339,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
   }
 
   /* Message bubbles — wider on mobile */
-  .message-content { max-width: 78%; }
+  .message-content { flex: 0 0 max-content; max-width: 78%; }
 
   /* Input area */
   .chat-input-area {
