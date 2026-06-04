@@ -10,8 +10,14 @@ export default function Chat() {
   const [activeConv, setActiveConv] = useState(null);
   const [taskToast, setTaskToast] = useState(null);
   const [showSidebar, setShowSidebar] = useState(true);
-  const isMobile = window.innerWidth <= 768;
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const wsHook = useWebSocket(token);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!wsHook?.on) return;

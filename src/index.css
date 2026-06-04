@@ -158,19 +158,20 @@ input:focus, textarea:focus { border-color: #5865f2; }
 /* Avatar placeholder to keep alignment when avatar is hidden */
 .avatar-spacer { width: 32px; flex-shrink: 0; }
 
-/* Content wrapper — max-width keeps bubbles from going edge to edge */
-.message-content { max-width: 65%; min-width: 0; }
-.message-row.own .message-content { text-align: right; }
+/* Content wrapper — inline-flex so it shrinks to content, capped by max-width */
+.message-content {
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 65%;
+  align-items: stretch;
+}
 
 /* Sender name */
 .message-sender { font-size: 12px; font-weight: 600; margin-bottom: 3px; color: #aaa; }
 .message-sender.ai { color: #a78bfa; }
 
-/* Bubble */
+/* Bubble — block inside the inline-flex, fills container width naturally */
 .message-bubble {
-  display: inline-block;
-  width: max-content;
-  max-width: 100%;
   padding: 9px 14px;
   font-size: 14px;
   line-height: 1.5;
@@ -179,9 +180,6 @@ input:focus, textarea:focus { border-color: #5865f2; }
   background: #2a2a2a;
   color: #e0e0e0;
   border-radius: 18px;
-  text-align: left;
-  vertical-align: top;
-  box-sizing: border-box;
 }
 
 /* Own messages — blue bubble */
@@ -203,7 +201,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
 .message-bubble.ai { background: #1a1229; border: 1px solid #2d1f4e; color: #c4b5fd; border-radius: 18px; }
 
 /* Timestamp */
-.message-time { font-size: 11px; color: #444; margin-top: 3px; }
+.message-time { font-size: 11px; color: #444; margin-top: 3px; text-align: right; }
 
 /* Input area */
 .chat-input-area { padding: 16px 20px; border-top: 1px solid #222; }
