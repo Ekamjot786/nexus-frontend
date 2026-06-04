@@ -79,6 +79,19 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
 
   let lastDate = null;
 
+  // Determine grouping position for each message
+  const getGroupClass = (msgs, idx) => {
+    const msg = msgs[idx];
+    const prev = msgs[idx - 1];
+    const next = msgs[idx + 1];
+    const samePrev = prev && prev.sender_id === msg.sender_id && !prev.is_ai && !msg.is_ai;
+    const sameNext = next && next.sender_id === msg.sender_id && !next.is_ai && !msg.is_ai;
+    if (!samePrev && sameNext) return 'group-start';
+    if (samePrev && sameNext) return 'group-middle';
+    if (samePrev && !sameNext) return 'group-end';
+    return 'group-start'; // solo message, still use group-start styling
+  };
+
   return (
     <div className="chat-area">
       <div className="chat-header">
@@ -105,21 +118,29 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
       </div>
       {showCalendar && <GroupCalendar conversationId={conversationId} members={members} onClose={() => setShowCalendar(false)} />}
       <div className="chat-messages">
-        {messages.map((msg) => {
+        {messages.map((msg, idx) => {
           const isOwn = msg.sender_id === user.id;
           const isAI = msg.is_ai;
           const msgDate = formatDate(msg.created_at);
           const showDate = msgDate !== lastDate;
           lastDate = msgDate;
           const color = msg.sender_color || memberColor(msg.sender_id);
+          const groupClass = getGroupClass(messages, idx);
+          const prev = messages[idx - 1];
+          const samePrev = prev && prev.sender_id === msg.sender_id && !prev.is_ai && !msg.is_ai;
+          const showAvatar = !isOwn && !samePrev;
+          const showSender = !isOwn && !samePrev;
           return (
             <div key={msg.id}>
-              {showDate && <div style={{ textAlign: 'center', margin: '12px 0', fontSize: 12, color: '#555' }}>{msgDate}</div>}
-              <div className={`message-row ${isOwn ? 'own' : ''}`}>
-                {!isOwn && <Avatar username={isAI ? '' : msg.sender_username} color={color} isAI={isAI} size={32} />}
-                <div>
-                  {!isOwn && <div className={`message-sender ${isAI ? 'ai' : ''}`} style={!isAI && color ? { color } : {}}>{isAI ? 'Kin AI' : msg.sender_username}</div>}
-                  <div className={`message-bubble ${isOwn ? 'own' : ''} ${isAI ? 'ai' : ''}`} style={{ whiteSpace: 'pre-wrap' }}>{msg.content}</div>
+              {showDate && <div style={{ textAlign: 'center', margin: '14px 0 6px', fontSize: 11, color: '#444' }}>{msgDate}</div>}
+              <div className={`message-row ${isOwn ? 'own' : ''} ${groupClass}`}>
+                {!isOwn && (showAvatar
+                  ? <Avatar username={isAI ? '' : msg.sender_username} color={color} isAI={isAI} size={32} />
+                  : <div className="avatar-spacer" />
+                )}
+                <div className="message-content">
+                  {showSender && <div className={`message-sender ${isAI ? 'ai' : ''}`} style={!isAI && color ? { color } : {}}>{isAI ? 'Kin AI' : msg.sender_username}</div>}
+                  <div className={`message-bubble ${isOwn ? 'own' : ''} ${isAI ? 'ai' : ''}`}>{msg.content}</div>
                   <div className="message-time">{formatTime(msg.created_at)}</div>
                 </div>
               </div>
@@ -127,9 +148,12 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
           );
         })}
         {aiLoading && (
-          <div className="message-row">
+          <div className="message-row group-start">
             <Avatar isAI size={32} />
-            <div><div className="message-sender ai">Kin AI</div><div className="message-bubble ai" style={{ color: '#888' }}>Thinking...</div></div>
+            <div className="message-content">
+              <div className="message-sender ai">Kin AI</div>
+              <div className="message-bubble ai" style={{ color: '#888' }}>Thinking...</div>
+            </div>
           </div>
         )}
         <div ref={bottomRef} />
