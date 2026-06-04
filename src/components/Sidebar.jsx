@@ -105,9 +105,31 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
       <div className="sidebar-footer">
         <div className="user-info">
           <Avatar username={user?.username} color={user?.color} size={32} />
-          <span className="user-name">{user?.username}</span>
+          <div>
+            <div className="user-name">{user?.username}</div>
+            <div style={{ fontSize: 11, color: '#555870', marginTop: 1 }}>Online</div>
+          </div>
         </div>
-        <button className="btn btn-ghost" onClick={logout} style={{ fontSize: 18 }} title="Logout">⏻</button>
+        <button
+          onClick={logout}
+          title="Sign out"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: 'none', border: '1px solid #2a2b38',
+            borderRadius: 8, padding: '5px 10px',
+            color: '#6b7280', fontSize: 12, fontWeight: 500,
+            cursor: 'pointer', transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = '#ed4245'; e.currentTarget.style.color = '#ed4245'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2b38'; e.currentTarget.style.color = '#6b7280'; }}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign out
+        </button>
       </div>
       {showModal && <NewConversationModal onClose={() => setShowModal(false)} onCreated={handleCreated} />}
     </div>
