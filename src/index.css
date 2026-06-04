@@ -50,6 +50,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
   background: #0f0f0f;
 }
 .auth-box {
@@ -165,7 +166,9 @@ input:focus, textarea:focus { border-color: #5865f2; }
 .message-time { font-size: 11px; color: #555; margin-top: 4px; }
 .message-row { display: flex; gap: 10px; margin-bottom: 2px; }
 .message-row.own { justify-content: flex-end; }
+.message-row.own > div { display: flex; flex-direction: column; align-items: flex-end; }
 .message-row.own .message-bubble { background: #1e2a4a; }
+.message-row.own .message-time { text-align: right; }
 
 /* Input area */
 .chat-input-area { padding: 16px 20px; border-top: 1px solid #222; }
