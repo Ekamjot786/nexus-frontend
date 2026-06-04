@@ -150,52 +150,43 @@ input:focus, textarea:focus { border-color: #5865f2; }
 .chat-header .members { font-size: 12px; color: #666; margin-top: 2px; }
 .chat-messages { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 2px; }
 
-/* Message rows — float-based, no flex (float naturally shrinks to content) */
+/* Message rows — text-align + inline-block (the simplest reliable approach) */
 .message-row {
-  overflow: hidden; /* clearfix */
-  padding: 0 16px;
+  padding: 1px 16px;
   margin-bottom: 2px;
 }
 .message-row.group-start { margin-top: 10px; }
+.message-row.own { text-align: right; }
 
-/* Avatar column — floated left for others */
-.msg-avatar-col {
-  float: left;
-  width: 30px;
-  margin-right: 6px;
-}
-
-/* Content wrapper — floated, shrinks to content automatically */
-.message-row:not(.own) .message-content {
-  float: left;
-  max-width: calc(68% - 36px);
-}
-.message-row.own .message-content {
-  float: right;
-  max-width: 68%;
+/* Content — inline-block naturally sizes to content, text-align positions it */
+.message-content {
+  display: inline-block;
+  max-width: 72%;
+  text-align: left;
+  vertical-align: top;
 }
 
 /* Sender name */
 .message-sender { font-size: 12px; font-weight: 600; margin-bottom: 2px; color: #aaa; }
 .message-sender.ai { color: #a78bfa; }
 
-/* Bubble */
+/* Bubble — block fills the inline-block width */
 .message-bubble {
-  background: #1f2c34;
-  color: #e9edef;
+  display: block;
   padding: 7px 10px;
   border-radius: 7.5px;
   font-size: 14px;
   line-height: 1.5;
   overflow-wrap: break-word;
   white-space: pre-wrap;
-  word-break: normal;
+  background: #1f2c34;
+  color: #e9edef;
 }
-.message-bubble.own { background: #005c4b; }
+.message-row.own .message-bubble { background: #005c4b; }
 .message-bubble.ai { background: #1a1229; border: 1px solid #2d1f4e; color: #c4b5fd; }
 
 /* Timestamp */
-.message-time { font-size: 11px; color: #667781; margin-top: 3px; text-align: right; }
+.message-time { font-size: 11px; color: #667781; margin-top: 2px; text-align: right; }
 
 /* Input area */
 .chat-input-area { padding: 16px 20px; border-top: 1px solid #222; }
@@ -333,8 +324,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
   }
 
   /* Message bubbles — wider on mobile */
-  .message-row:not(.own) .message-content { max-width: calc(80% - 36px); }
-  .message-row.own .message-content { max-width: 80%; }
+  .message-content { max-width: 82%; }
 
   /* Input area */
   .chat-input-area {
