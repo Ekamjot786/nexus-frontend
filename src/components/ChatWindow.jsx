@@ -132,7 +132,7 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
           const showSender = !isOwn && !samePrev;
           return (
             <div key={msg.id}>
-              {showDate && <div style={{ textAlign: 'center', margin: '14px 0 6px', fontSize: 11, color: '#444' }}>{msgDate}</div>}
+              {showDate && <div style={{ textAlign: 'center', margin: '16px 0 8px', fontSize: 11, color: '#3e4155', letterSpacing: '0.5px', fontWeight: 500 }}>{msgDate}</div>}
               <div className={`message-row ${isOwn ? 'own' : ''} ${groupClass}`}>
                 <div className="message-content">
                   {showSender && <div className={`message-sender ${isAI ? 'ai' : ''}`} style={!isAI && color ? { color } : {}}>{isAI ? 'Kin AI' : msg.sender_username}</div>}
