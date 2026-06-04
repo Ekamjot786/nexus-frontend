@@ -158,20 +158,20 @@ input:focus, textarea:focus { border-color: #5865f2; }
 /* Avatar placeholder to keep alignment when avatar is hidden */
 .avatar-spacer { width: 32px; flex-shrink: 0; }
 
-/* Content wrapper — inline-flex so it shrinks to content, capped by max-width */
+/* Content wrapper — fixed max-width, always fills it */
 .message-content {
-  display: inline-flex;
-  flex-direction: column;
   max-width: 65%;
-  align-items: stretch;
+  width: 65%;
 }
 
 /* Sender name */
 .message-sender { font-size: 12px; font-weight: 600; margin-bottom: 3px; color: #aaa; }
 .message-sender.ai { color: #a78bfa; }
 
-/* Bubble — block inside the inline-flex, fills container width naturally */
+/* Bubble — fills the content width, no shrinking */
 .message-bubble {
+  display: block;
+  width: 100%;
   padding: 9px 14px;
   font-size: 14px;
   line-height: 1.5;
@@ -180,6 +180,7 @@ input:focus, textarea:focus { border-color: #5865f2; }
   background: #2a2a2a;
   color: #e0e0e0;
   border-radius: 18px;
+  box-sizing: border-box;
 }
 
 /* Own messages — blue bubble */
