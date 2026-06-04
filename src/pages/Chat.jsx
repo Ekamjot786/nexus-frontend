@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useWebSocket } from '../hooks/useWebSocket';
 import Sidebar from '../components/Sidebar';
@@ -12,12 +12,51 @@ export default function Chat() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const wsHook = useWebSocket(token);
+  const activeConvRef = useRef(activeConv);
+
+  // Keep ref in sync so notification handler always sees latest value
+  useEffect(() => { activeConvRef.current = activeConv; }, [activeConv]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Request notification permission once on load
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
+
+  // Show browser notification for new messages
+  useEffect(() => {
+    if (!wsHook?.on) return;
+    const handler = (data) => {
+      const { conversationId: convId, message } = data;
+      if (!message) return;
+      if (message.sender_id === user?.id) return; // ignore own messages
+      if (message.is_ai) return; // ignore AI messages
+      if (convId === activeConvRef.current && document.hasFocus()) return; // already watching
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const notif = new Notification(message.sender_username || 'New message', {
+          body: message.content?.slice(0, 120) || '',
+          icon: '/favicon.ico',
+          tag: `nexus-${convId}`, // groups notifications per conversation
+          silent: false,
+        });
+        notif.onclick = () => {
+          window.focus();
+          handleSelect(convId);
+          notif.close();
+        };
+      }
+    };
+    wsHook.on('new_message', handler);
+    return () => wsHook.off('new_message', handler);
+  }, [wsHook?.on, user]);
 
   useEffect(() => {
     if (!wsHook?.on) return;
