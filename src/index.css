@@ -158,10 +158,10 @@ input:focus, textarea:focus { border-color: #5865f2; }
 /* Avatar placeholder to keep alignment when avatar is hidden */
 .avatar-spacer { width: 32px; flex-shrink: 0; }
 
-/* Content wrapper — fixed max-width, always fills it */
+/* Content wrapper — shrinks to content, capped at 65% */
 .message-content {
+  width: fit-content;
   max-width: 65%;
-  width: 65%;
 }
 
 /* Sender name */
