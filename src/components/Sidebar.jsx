@@ -112,23 +112,23 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
         </div>
         <button
           onClick={logout}
-          title="Sign out"
+          title="Log out"
           style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            background: 'none', border: '1px solid #2a2b38',
-            borderRadius: 8, padding: '5px 10px',
-            color: '#6b7280', fontSize: 12, fontWeight: 500,
-            cursor: 'pointer', transition: 'all 0.15s',
+            display: 'flex', alignItems: 'center', gap: 6,
+            background: 'rgba(237,66,69,0.12)', border: 'none',
+            borderRadius: 8, padding: '6px 12px',
+            color: '#ed4245', fontSize: 12, fontWeight: 500,
+            cursor: 'pointer', transition: 'background 0.15s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#ed4245'; e.currentTarget.style.color = '#ed4245'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#2a2b38'; e.currentTarget.style.color = '#6b7280'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(237,66,69,0.22)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(237,66,69,0.12)'; }}
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
             <polyline points="16 17 21 12 16 7"/>
             <line x1="21" y1="12" x2="9" y2="12"/>
           </svg>
-          Sign out
+          Log out
         </button>
       </div>
       {showModal && <NewConversationModal onClose={() => setShowModal(false)} onCreated={handleCreated} />}
