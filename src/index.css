@@ -359,10 +359,6 @@ input:focus, textarea:focus { border-color: #5865f2; }
     min-width: 240px;
   }
 
-  .message-bubble {
-    max-width: 80%;
-  }
-
   .auth-box {
     width: 380px;
   }
@@ -373,10 +369,6 @@ input:focus, textarea:focus { border-color: #5865f2; }
   .sidebar {
     width: 320px;
     min-width: 320px;
-  }
-
-  .message-bubble {
-    max-width: 65%;
   }
 }
 
