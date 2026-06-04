@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import NewConversationModal from './NewConversationModal';
@@ -16,6 +16,15 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
   const { user, logout } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [unread, setUnread] = useState({});
+  const activeIdRef = useRef(activeId);
+
+  useEffect(() => { activeIdRef.current = activeId; }, [activeId]);
+
+  // Clear unread when a conversation is opened
+  useEffect(() => {
+    if (activeId) setUnread(prev => ({ ...prev, [activeId]: 0 }));
+  }, [activeId]);
 
   const load = async () => {
     const { data } = await axios.get('/api/conversations/');
@@ -28,7 +37,6 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
     if (!wsHook?.on) return;
     const onConvCreated = (data) => {
       load();
-      // Join the new conversation's room so we receive its messages
       if (data.conversationId) wsHook.emit('join_conversation', { conversationId: data.conversationId });
     };
     const onNewMsg = (data) => {
@@ -39,11 +47,15 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
           c.id === data.conversationId ? { ...c, last_message: data.message.content } : c
         );
       });
+      // Increment unread badge if not the active conversation and not own message
+      if (data.conversationId !== activeIdRef.current && data.message?.sender_id !== user?.id) {
+        setUnread(prev => ({ ...prev, [data.conversationId]: (prev[data.conversationId] || 0) + 1 }));
+      }
     };
     wsHook.on('conversation_created', onConvCreated);
     wsHook.on('new_message', onNewMsg);
     return () => { wsHook.off('conversation_created', onConvCreated); wsHook.off('new_message', onNewMsg); };
-  }, [wsHook?.on, wsHook?.off]);
+  }, [wsHook?.on, wsHook?.off, user]);
 
   const handleCreated = (id) => { setShowModal(false); load(); onSelect(id); };
 
@@ -66,9 +78,27 @@ export default function Sidebar({ activeId, onSelect, wsHook, className }) {
           <div key={conv.id} className={`conv-item ${activeId === conv.id ? 'active' : ''}`} onClick={() => onSelect(conv.id)}>
             <Avatar username={conv.name} color={conv.other_color} isGroup={!!conv.is_group} size={40} />
             <div className="conv-info">
-              <div className="conv-name">{conv.name || 'Unknown'}</div>
-              <div className="conv-last">{conv.last_message || 'No messages yet'}</div>
+              <div className="conv-name" style={unread[conv.id] > 0 ? { color: '#fff', fontWeight: 600 } : {}}>{conv.name || 'Unknown'}</div>
+              <div className="conv-last" style={unread[conv.id] > 0 ? { color: '#a0a3c0' } : {}}>{conv.last_message || 'No messages yet'}</div>
             </div>
+            {unread[conv.id] > 0 && (
+              <div style={{
+                background: '#5865f2',
+                color: '#fff',
+                borderRadius: 99,
+                minWidth: 20,
+                height: 20,
+                fontSize: 11,
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 5px',
+                flexShrink: 0,
+              }}>
+                {unread[conv.id] > 99 ? '99+' : unread[conv.id]}
+              </div>
+            )}
           </div>
         ))}
       </div>
