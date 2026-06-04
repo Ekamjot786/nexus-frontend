@@ -134,9 +134,10 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
             <div key={msg.id}>
               {showDate && <div style={{ textAlign: 'center', margin: '14px 0 6px', fontSize: 11, color: '#444' }}>{msgDate}</div>}
               <div className={`message-row ${isOwn ? 'own' : ''} ${groupClass}`}>
-                {!isOwn && (showAvatar
-                  ? <Avatar username={isAI ? '' : msg.sender_username} color={color} isAI={isAI} size={32} />
-                  : <div className="avatar-spacer" />
+                {!isOwn && (
+                  <div className="msg-avatar-col">
+                    {showAvatar && <Avatar username={isAI ? '' : msg.sender_username} color={color} isAI={isAI} size={28} />}
+                  </div>
                 )}
                 <div className="message-content">
                   {showSender && <div className={`message-sender ${isAI ? 'ai' : ''}`} style={!isAI && color ? { color } : {}}>{isAI ? 'Kin AI' : msg.sender_username}</div>}
@@ -149,7 +150,7 @@ export default function ChatWindow({ conversationId, wsHook, onBack }) {
         })}
         {aiLoading && (
           <div className="message-row group-start">
-            <Avatar isAI size={32} />
+            <div className="msg-avatar-col"><Avatar isAI size={28} /></div>
             <div className="message-content">
               <div className="message-sender ai">Kin AI</div>
               <div className="message-bubble ai" style={{ color: '#888' }}>Thinking...</div>
